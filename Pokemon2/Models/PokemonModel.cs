@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PokemonAPI.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,33 +8,22 @@ namespace PokemonAPI.Models
 {
     public class PokemonModel
     {
-        public PokemonModel(PokemonSpeciesModel pokemonSpecies)
+        private readonly IPokemonService _pokemonService;
+
+        public PokemonModel(PokemonSpeciesModel pokemonSpecies, IPokemonService pokemonService)
         {
+            _pokemonService = pokemonService;
+            Description = _pokemonService.SetDescriptionAndLanguage(pokemonSpecies, "es");
             Name = pokemonSpecies.Name;
 
-            // note: find elsewhere to put this logic, make it generic for different languages
-            if (pokemonSpecies.FlavorTextEntries != null)
-            {
-                bool IsLanguageEnglish = pokemonSpecies.FlavorTextEntries.Any(x => x.Language.Name == "en");
-
-
-                if (IsLanguageEnglish)
-                {
-                    Description = pokemonSpecies.FlavorTextEntries.First(x => x.Language.Name == "en").FlavorText?.Replace("\n", " ").Replace("\f", " ");
-                }
-                else
-                {
-                    Description = "No description found...Rare.";
-                }
-            }
-            else
-            {
-                Description = "No description found...Rare.";
-            }
 
             if (pokemonSpecies.Habitat != null)
             {
                 Habitat = pokemonSpecies.Habitat.Name;
+            }
+            else
+            {
+                Habitat = "Habitat unknown...";
             }
             
             IsLegendary = pokemonSpecies.IsLegendary;

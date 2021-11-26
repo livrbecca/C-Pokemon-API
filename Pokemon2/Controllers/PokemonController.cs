@@ -9,7 +9,7 @@ using HttpGetAttribute = Microsoft.AspNetCore.Mvc.HttpGetAttribute;
 
 namespace PokemonAPI.Controllers
 {
-    [Microsoft.AspNetCore.Mvc.Route("[Controller]")]
+    [Route("[Controller]")]
     [ApiController]
     public class PokemonController : ControllerBase // A base class for an MVC controller without view support.
     {
@@ -21,7 +21,7 @@ namespace PokemonAPI.Controllers
         }
 
 
-        [HttpGet("{pokemonName}")] // NOTED: The name is case sensitive - do a 303 path to the lowercase name
+        [HttpGet("{pokemonName}")] 
         public async Task<IActionResult> GetPokemonAsync (string pokemonName)
         // IActionResult is an interface, we can create a custom response as a return, when you use ActionResult you can return only predefined ones for returning a View or a resource. 
         // With IActionResult we can return a response, or error as well. 
@@ -35,7 +35,7 @@ namespace PokemonAPI.Controllers
                     return StatusCode((int)response.HttpStatusCode, response.ErrorMessage);
                 }
                 var pokemonSpecies = response.Data;
-                var pokemon = new PokemonModel(pokemonSpecies);
+                var pokemon = new PokemonModel(pokemonSpecies, _pokemonService);
                 return Ok(pokemon);
             }
             catch (Exception ex)

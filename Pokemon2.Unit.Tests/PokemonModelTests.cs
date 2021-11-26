@@ -1,6 +1,8 @@
+using Moq;
 using NUnit.Framework;
 using PokemonAPI.Models;
 using PokemonAPI.Models.ModelsForSpecies.LanguageFlavourText;
+using PokemonAPI.Services;
 using Shouldly;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,15 +19,17 @@ namespace Pokemon2.Unit.Tests
         [Test]
         public void Constructor_Should_Work()
         {
-            var model = new PokemonModel(new PokemonSpeciesModel());
+            var mockPokemonService = new Mock<IPokemonService>();
+            var model = new PokemonModel(new PokemonSpeciesModel(), mockPokemonService.Object);
 
             model.ShouldNotBeNull();
         }
         [Test]
         public void Constructor_Should_Set_Name()
         {
+            var mockPokemonService = new Mock<IPokemonService>();
             var name = "eevee";
-            var model = new PokemonModel(new PokemonSpeciesModel { Name = name } );
+            var model = new PokemonModel(new PokemonSpeciesModel { Name = name }, (IPokemonService)mockPokemonService);
 
             model.Name.ShouldBe(name);
         }
@@ -34,8 +38,10 @@ namespace Pokemon2.Unit.Tests
         [Test]
         public void Constructor_Should_Set_Habitat()
         {
+            var mockPokemonService = new Mock<IPokemonService>();
+
             var name = "cave";
-            var model = new PokemonModel(new PokemonSpeciesModel { Habitat = new HabitatModel { Name = name } } );
+            var model = new PokemonModel(new PokemonSpeciesModel { Habitat = new HabitatModel { Name = name } }, mockPokemonService.Object);
 
             model.Habitat.ShouldBe(name);
         }
@@ -43,8 +49,9 @@ namespace Pokemon2.Unit.Tests
         [Test]
         public void Constructor_Should_Default_isLegendary_to_false()
         {
+            var mockPokemonService = new Mock<IPokemonService>();
 
-            var model = new PokemonModel(new PokemonSpeciesModel());
+            var model = new PokemonModel(new PokemonSpeciesModel(), mockPokemonService.Object);
 
             model.IsLegendary.ShouldBeFalse();
         }
@@ -52,8 +59,8 @@ namespace Pokemon2.Unit.Tests
         [Test]
         public void Constructor_Should_Set_isLegendary()
         {
-            
-            var model = new PokemonModel(new PokemonSpeciesModel { IsLegendary = true });
+            var mockPokemonService = new Mock<IPokemonService>();
+            var model = new PokemonModel(new PokemonSpeciesModel { IsLegendary = true }, mockPokemonService.Object);
 
             model.IsLegendary.ShouldBe(true);
         }
@@ -64,7 +71,8 @@ namespace Pokemon2.Unit.Tests
         {
 
             // arrange
-            var model = new PokemonModel(new PokemonSpeciesModel());
+            var mockPokemonService = new Mock<IPokemonService>();
+            var model = new PokemonModel(new PokemonSpeciesModel(), mockPokemonService.Object);
             var speciesModel = new PokemonSpeciesModel();
 
             // act
@@ -79,6 +87,7 @@ namespace Pokemon2.Unit.Tests
         {
 
             // arrange
+            var mockPokemonService = new Mock<IPokemonService>();
             string description = "sffsfsdf\nsfsdsdfs";
             string expectedDescription = "sffsfsdf sfsdsdfs";
 
@@ -89,7 +98,7 @@ namespace Pokemon2.Unit.Tests
             } };
 
             // act
-            var model = new PokemonModel(pokemonSpeciesModel);
+            var model = new PokemonModel(pokemonSpeciesModel, mockPokemonService.Object);
 
 
             // assert

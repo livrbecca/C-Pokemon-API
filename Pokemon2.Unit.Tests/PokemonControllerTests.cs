@@ -41,7 +41,7 @@ namespace Pokemon2.Unit.Tests
                 ErrorMessage = string.Empty,
             };
             
-            var pokemon =  new PokemonModel(returnedResult.Data); // should have name of eevee
+            var pokemon =  new PokemonModel(returnedResult.Data, (IPokemonService)mockPokemonService); // should have name of eevee
 
             mockPokemonService.Setup(x => x.GetPokemonSpeciesData(It.IsAny<string>())).ReturnsAsync(returnedResult);
 
@@ -76,7 +76,7 @@ namespace Pokemon2.Unit.Tests
 
             var returnedResult = new Result<PokemonSpeciesModel>()
             {
-                ErrorMessage = "Passing an example error for the request",
+                ErrorMessage = $"Could not find: the pokemon {speciesModel.Name}\nplease try again.", // is this not testing my hard-coded string instead of the one in the controller?
                 HttpStatusCode = System.Net.HttpStatusCode.NotFound,
                 Data = speciesModel, // breaks if you change this to null, double check why
             };
@@ -87,7 +87,7 @@ namespace Pokemon2.Unit.Tests
             // SUT
             var SUT = new PokemonController(mockPokemonService.Object);
 
-            var pokemon = new PokemonModel(returnedResult.Data);
+            var pokemon = new PokemonModel(returnedResult.Data, (IPokemonService)mockPokemonService);
 
             // act
             var getRequestResults = await SUT.GetPokemonAsync("0fj35r23wrf");
@@ -96,9 +96,12 @@ namespace Pokemon2.Unit.Tests
 
             var objectResult = getRequestResults as ObjectResult;
             objectResult.StatusCode.ShouldBe(404);
-         
+            returnedResult.ErrorMessage.ShouldContain($"Could not find: the pokemon {speciesModel.Name}\nplease try again.");
 
         }
 
+
+        // test the catch block
+        // issues: always 404, unsure how to get into catch block
     }
 }

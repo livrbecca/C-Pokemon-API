@@ -1,6 +1,7 @@
 ﻿using PokemonAPI.BaseResponse;
 using PokemonAPI.Models;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -14,13 +15,7 @@ namespace PokemonAPI.Services
         public async Task<Result<PokemonSpeciesModel>> GetPokemonSpeciesData(string pokemonName)
         {
 
-            //pokemonName = pokemonName.ToLower(); // leaves uppercase in URL bar 
-
-            /// if char[0] of pokemonName is upper case, change to lowercase or 301 redirect
-            /// 
-            // if pokemonName is capital letter
-            // try 301 redirct to find lowercase version
-            // else: code below
+                
             try
             {
                 var client = new HttpClient
@@ -28,23 +23,27 @@ namespace PokemonAPI.Services
                     BaseAddress = new Uri("https://pokeapi.co")
                 };
 
+
+                // test result is a HttpResponseMessage
                 var result = await client.GetAsync($"/api/v2/pokemon-species/{pokemonName.ToLower()}"); // still leaves uppercase in url bar
 
                
             
-
+                // test for exact error message string
                 if (!result.IsSuccessStatusCode)
                 {
                     return new Result<PokemonSpeciesModel>
                     {
                         HttpStatusCode = result.StatusCode,
-                        ErrorMessage = "Generic error message to be improved",
+                        ErrorMessage = $"Could not find: the pokemon {pokemonName}\nplease try again.",
                         Data = null
                     };
                 }
 
                 string resultContent = await result.Content.ReadAsStringAsync();
                 var detailsFromAPI = JsonSerializer.Deserialize<PokemonSpeciesModel>(resultContent, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+               // var setDescription = SetDescriptionAndLanguage(detailsFromAPI, "en");
 
                 return new Result<PokemonSpeciesModel>
                 {
@@ -67,6 +66,32 @@ namespace PokemonAPI.Services
 
         }
 
-     
+
+        public string SetDescriptionAndLanguage(PokemonSpeciesModel pokemonSpecies, string languageAbbreviation)
+        {
+            string Description = string.Empty;
+
+            if (pokemonSpecies.FlavorTextEntries != null)
+            {
+                bool IsLanguageEnglish = pokemonSpecies.FlavorTextEntries.Any(x => x.Language.Name == $"{languageAbbreviation}");
+
+
+                if (IsLanguageEnglish)
+                {
+                    return Description = pokemonSpecies.FlavorTextEntries.First(x => x.Language.Name == $"{languageAbbreviation}").FlavorText?.Replace("\n", " ").Replace("\f", " ");
+                }
+                else
+                {
+                   return  Description = "No description found...Rare.";
+                }
+            }
+            else
+            {
+              return   Description = "No description found...Rare.";
+            }
+        }
+
     }
+
+   
 }
