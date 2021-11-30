@@ -29,7 +29,7 @@ namespace Pokemon2.Unit.Tests
         {
             var mockPokemonService = new Mock<IPokemonService>();
             var name = "eevee";
-            var model = new PokemonModel(new PokemonSpeciesModel { Name = name }, (IPokemonService)mockPokemonService);
+            var model = new PokemonModel(new PokemonSpeciesModel { Name = name }, mockPokemonService.Object);
 
             model.Name.ShouldBe(name);
         }
@@ -66,46 +66,7 @@ namespace Pokemon2.Unit.Tests
         }
 
 
-        [Test]
-        public void Constructor_Should_Set_NotFound_Text_If_FlavourTextEntries_Null()
-        {
-
-            // arrange
-            var mockPokemonService = new Mock<IPokemonService>();
-            var model = new PokemonModel(new PokemonSpeciesModel(), mockPokemonService.Object);
-            var speciesModel = new PokemonSpeciesModel();
-
-            // act
-            speciesModel.FlavorTextEntries = null;
-
-            // assert
-            model.Description.ShouldBe("No description found...Rare.");
-        }
-
-        [Test] // not passing for the right reasons
-        public void Constructor_Should_Remove_Line_Breaks_From_Description()
-        {
-
-            // arrange
-            var mockPokemonService = new Mock<IPokemonService>();
-            string description = "sffsfsdf\nsfsdsdfs";
-            string expectedDescription = "sffsfsdf sfsdsdfs";
-
-            var FlavTextEntry = new FlavorTextEntryModel { FlavorText = description, Language = new LanguageFlavorModel { Name = "en" } };
-
-            var pokemonSpeciesModel = new PokemonSpeciesModel { FlavorTextEntries = new List<FlavorTextEntryModel> {
-                FlavTextEntry
-            } };
-
-            // act
-            var model = new PokemonModel(pokemonSpeciesModel, mockPokemonService.Object);
-
-
-            // assert
-
-            model.Description.ShouldBe(expectedDescription);
-            
-        }
+        
 
 
     }

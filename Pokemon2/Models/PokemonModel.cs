@@ -13,7 +13,7 @@ namespace PokemonAPI.Models
         public PokemonModel(PokemonSpeciesModel pokemonSpecies, IPokemonService pokemonService)
         {
             _pokemonService = pokemonService;
-            Description = _pokemonService.SetDescriptionAndLanguage(pokemonSpecies, "es");
+            Description = _pokemonService.SetDescriptionAndLanguage(pokemonSpecies, "en");
             Name = pokemonSpecies.Name;
 
 

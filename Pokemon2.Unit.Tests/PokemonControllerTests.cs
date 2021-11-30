@@ -41,7 +41,7 @@ namespace Pokemon2.Unit.Tests
                 ErrorMessage = string.Empty,
             };
             
-            var pokemon =  new PokemonModel(returnedResult.Data, (IPokemonService)mockPokemonService); // should have name of eevee
+            var pokemon =  new PokemonModel(returnedResult.Data, mockPokemonService.Object); // should have name of eevee
 
             mockPokemonService.Setup(x => x.GetPokemonSpeciesData(It.IsAny<string>())).ReturnsAsync(returnedResult);
 
@@ -61,7 +61,7 @@ namespace Pokemon2.Unit.Tests
             okObject.StatusCode.ShouldBe(200);
            
             Assert.AreEqual(pokemon, okObject.Value);
-            pokemon.Name.ShouldBeOfType<string>();
+            //pokemon.Name.ShouldBeOfType<int>();
         }
 
         [Test]
@@ -87,7 +87,7 @@ namespace Pokemon2.Unit.Tests
             // SUT
             var SUT = new PokemonController(mockPokemonService.Object);
 
-            var pokemon = new PokemonModel(returnedResult.Data, (IPokemonService)mockPokemonService);
+            var pokemon = new PokemonModel(returnedResult.Data, mockPokemonService.Object);
 
             // act
             var getRequestResults = await SUT.GetPokemonAsync("0fj35r23wrf");
@@ -97,6 +97,19 @@ namespace Pokemon2.Unit.Tests
             var objectResult = getRequestResults as ObjectResult;
             objectResult.StatusCode.ShouldBe(404);
             returnedResult.ErrorMessage.ShouldContain($"Could not find: the pokemon {speciesModel.Name}\nplease try again.");
+
+        }
+
+        [Test]
+        public async Task Null_Input_Handled()
+        {
+            var mockPokemonService = new Mock<IPokemonService>();
+            var SUT = new PokemonController(mockPokemonService.Object);
+            var getRequestResults = await SUT.GetPokemonAsync(null);
+
+            getRequestResults.ShouldBeOfType<ObjectResult>();
+            var objectResult = getRequestResults as ObjectResult;
+            objectResult.StatusCode.ShouldBe(400);
 
         }
 

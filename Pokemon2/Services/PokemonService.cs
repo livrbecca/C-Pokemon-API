@@ -15,7 +15,7 @@ namespace PokemonAPI.Services
         public async Task<Result<PokemonSpeciesModel>> GetPokemonSpeciesData(string pokemonName)
         {
 
-                
+           
             try
             {
                 var client = new HttpClient
@@ -73,10 +73,10 @@ namespace PokemonAPI.Services
 
             if (pokemonSpecies.FlavorTextEntries != null)
             {
-                bool IsLanguageEnglish = pokemonSpecies.FlavorTextEntries.Any(x => x.Language.Name == $"{languageAbbreviation}");
+                bool IsLanguageSelectedValid = pokemonSpecies.FlavorTextEntries.Any(x => x.Language.Name == $"{languageAbbreviation}");
 
 
-                if (IsLanguageEnglish)
+                if (IsLanguageSelectedValid)
                 {
                     return Description = pokemonSpecies.FlavorTextEntries.First(x => x.Language.Name == $"{languageAbbreviation}").FlavorText?.Replace("\n", " ").Replace("\f", " ");
                 }
