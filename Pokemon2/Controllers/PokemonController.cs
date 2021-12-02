@@ -17,7 +17,7 @@ namespace PokemonAPI.Controllers
     {
   
         private readonly IPokemonService _pokemonService;
-       private readonly ITranslatorService _translator;
+        private readonly ITranslatorService _translator;
 
         public PokemonController(IPokemonService pokemonService, ITranslatorService translator)
         //ITranslator translator

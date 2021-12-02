@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using Pokemon2.Services;
 using PokemonAPI.BaseResponse;
 using PokemonAPI.Controllers;
 using PokemonAPI.Models;
@@ -28,7 +29,9 @@ namespace Pokemon2.Unit.Tests
 
             // arrange
             var mockPokemonService = new Mock<IPokemonService>();
-        
+            var mockTranslatorService = new Mock<ITranslatorService>();
+
+
             var eeveeSpeciesModel = new PokemonSpeciesModel()
             {
                 Name = "eevee"
@@ -47,7 +50,7 @@ namespace Pokemon2.Unit.Tests
 
 
             // the service being tested is the controller (SUT)
-            var serviceBeingTested = new PokemonController(mockPokemonService.Object);
+            var serviceBeingTested = new PokemonController(mockPokemonService.Object, mockTranslatorService.Object);
 
             // act
             var getRequestResult = await serviceBeingTested.GetPokemonAsync("eevee"); // calling = act
@@ -82,10 +85,11 @@ namespace Pokemon2.Unit.Tests
             };
            
             var mockPokemonService = new Mock<IPokemonService>();
+            var mockTranslatorService = new Mock<ITranslatorService>();
             mockPokemonService.Setup(x => x.GetPokemonSpeciesData(It.IsAny<string>())).ReturnsAsync(returnedResult); // returns a Result of type PokemonSpeciesModel
             
             // SUT
-            var SUT = new PokemonController(mockPokemonService.Object);
+            var SUT = new PokemonController(mockPokemonService.Object, mockTranslatorService.Object);
 
             var pokemon = new PokemonModel(returnedResult.Data, mockPokemonService.Object);
 
@@ -104,7 +108,8 @@ namespace Pokemon2.Unit.Tests
         public async Task Null_Input_Handled()
         {
             var mockPokemonService = new Mock<IPokemonService>();
-            var SUT = new PokemonController(mockPokemonService.Object);
+            var mockTranslatorService = new Mock<ITranslatorService>();
+            var SUT = new PokemonController(mockPokemonService.Object, mockTranslatorService.Object);
             var getRequestResults = await SUT.GetPokemonAsync(null);
 
             getRequestResults.ShouldBeOfType<ObjectResult>();
